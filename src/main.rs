@@ -91,7 +91,7 @@ fn main() {
                 for (site_key, places) in info.site_capacities() {
                     let (pass_score, last_admitted_place) = analyser.get_site_passing_info(&info, site_key);
 
-                    println!("{site_key} [{places} places] -> {pass_score}pts | #{last_admitted_place}")
+                    println!("{site_key} [{places} places] -> {pass_score} | #{last_admitted_place}")
                 }
             }
             "help" => {
