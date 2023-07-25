@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use indicatif::ProgressBar;
 use crate::info::{AbitKey, Info, SiteKey};
 
 pub struct Analyser {
@@ -18,15 +19,14 @@ impl Analyser {
         self.sites.clear();
         self.admission.clear();
 
-        let len = info.abits().len();
-
-        let mut cnt = 0;
+        println!("Handling abiturients...");
+        let mut bar = ProgressBar::new(info.abits().len() as u64);
         for (abit_key, _) in info.abits() {
-            cnt += 1;
             self.admit(info, abit_key);
 
-            println!("Handled {cnt}/{len} abiturients");
+            bar.inc(1);
         }
+        bar.finish();
     }
 
     fn admit(&mut self, info: &Info, abit_key: &AbitKey) {

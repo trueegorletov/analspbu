@@ -23,8 +23,6 @@ fn main() {
     println!("Successfully refreshed the data");
 
     loop {
-        println!("Send a command...");
-
         let mut input = "".to_string();
         stdin.read_line(&mut input).unwrap();
 

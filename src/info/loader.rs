@@ -4,6 +4,7 @@ use std::cmp::{min};
 use lazy_static::lazy_static;
 use regex::Regex;
 use tl::NodeHandle;
+use indicatif::ProgressBar;
 use crate::info::Info;
 
 pub struct Loader {
@@ -432,25 +433,33 @@ impl Loader {
     }
 
     pub fn run(&mut self, with_quotas: bool) {
+        println!("Loading the pages...");
+        let mut bar = ProgressBar::new(PAGES.len() as u64);
         for i in 0..PAGES.len() {
             let page = PAGES[i];
             self.load_page((PAGE_START.to_owned() + page).as_str());
 
-            let percent = ((i + 1) as f64 / PAGES.len() as f64 * 100.).round() as i32;
+            // let percent = ((i + 1) as f64 / PAGES.len() as f64 * 100.).round() as i32;
+            // println!("Loading the pages... {}%", percent);
 
-            println!("Loading the pages... {}%", percent);
+            bar.inc(1);
         }
+        bar.finish();
 
         macro_rules! load_quotas {
             ($arr:ident; $kind:expr; $log_name:expr) => {
+                println!("Loading the {} pages...", $log_name);
+                let mut bar = ProgressBar::new($arr.len() as u64);
                 for i in 0..$arr.len() {
                     let page = $arr[i];
                     self.load_quota_page((PAGE_START.to_owned() + page).as_str(), $kind);
 
-                    let percent = ((i + 1) as f64 / $arr.len() as f64 * 100.).round() as i32;
+                    // let percent = ((i + 1) as f64 / $arr.len() as f64 * 100.).round() as i32;
+                    // println!("Loading the {} pages... {}%", $log_name, percent);
 
-                    println!("Loading the {} pages... {}%", $log_name, percent);
+                    bar.inc(1);
                 }
+                bar.finish();
             }
         }
 
