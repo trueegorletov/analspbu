@@ -432,7 +432,7 @@ impl Loader {
         }
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&mut self, with_quotas: bool) {
         for i in 0..PAGES.len() {
             let page = PAGES[i];
             self.load_page((PAGE_START.to_owned() + page).as_str());
@@ -455,9 +455,11 @@ impl Loader {
             }
         }
 
-        load_quotas!(TARGET_QUOTA_PAGES; QuotaKind::Target; "target quota");
-        load_quotas!(SPECIAL_QUOTA_PAGES; QuotaKind::Special; "special quota");
-        load_quotas!(SEPARATE_QUOTA_PAGES; QuotaKind::Separate; "separate quota");
+        if with_quotas {
+            load_quotas!(TARGET_QUOTA_PAGES; QuotaKind::Target; "target quota");
+            load_quotas!(SPECIAL_QUOTA_PAGES; QuotaKind::Special; "special quota");
+            load_quotas!(SEPARATE_QUOTA_PAGES; QuotaKind::Separate; "separate quota");
+        }
     }
 
     pub fn load_page(&mut self, addr: &str) {
