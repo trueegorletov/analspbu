@@ -1,5 +1,6 @@
 use std::cmp::max;
 use std::collections::HashMap;
+use rand::prelude::SliceRandom;
 use rand::Rng;
 
 mod loader;
@@ -65,34 +66,23 @@ impl Info {
     }
 
     pub fn drop_percent(&mut self, percent: u32, range: (u32, u32), ignore: Option<&AbitKey>) {
-        let mut remove = vec![];
+        let mut keys: Vec<AbitKey> =
+            if let Some(ignore) = ignore {
+                self.abits.keys().filter(|k| **k != *ignore).map(|k| k.clone()).collect()
+            } else {
+                self.abits.keys().map(|k| k.clone()).collect()
+            };
 
-        for (abit_key, abit) in &self.abits {
-            if let Some(key) = ignore {
-                if *key == *abit_key {
-                    continue;
-                }
-            }
+        let n = keys.len();
 
-            let score = abit.get_biggest_score();
+        let mut k = (n as f64 * percent as f64 / 100.).round() as u64;
 
-            if score < range.0 || score > range.1 {
-                continue;
-            }
+        let mut rng = rand::thread_rng();
 
-            let mut rng = rand::thread_rng();
+        let mut another = false;
 
-            let k = 100_000;
-
-            let result = (rng.gen_range(1..=k) as f64 / (k as f64)) * 100.;
-
-            if result <= percent as f64 {
-                remove.push(abit_key.clone());
-            }
-        }
-
-        for key in remove {
-            self.abits.remove(&key);
+        for key in keys.choose_multiple(&mut rng, k as usize) {
+            self.abits.remove(key);
         }
     }
 }
