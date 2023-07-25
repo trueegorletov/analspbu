@@ -51,6 +51,15 @@ impl Info {
     pub fn site_capacities(&self) -> &HashMap<SiteKey, usize> {
         &self.site_capacities
     }
+
+    pub fn rescale(&mut self, percent: usize) {
+        let k = percent as f64 / 100.;
+
+        for (_, capacity) in &mut self.site_capacities {
+            let t = ((*capacity as f64) * k).floor() as usize;
+            *capacity = t;
+        }
+    }
 }
 
 pub struct Abit {
@@ -88,6 +97,7 @@ impl Abit {
     pub fn get_score(&self, site: &SiteKey) -> usize {
         *self.site_scores.get(site).unwrap()
     }
+
 }
 
 pub struct Priority {

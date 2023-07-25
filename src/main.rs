@@ -47,6 +47,7 @@ fn main() {
             "info" => {
                 if label.is_empty() {
                     println!("Please specify the ID");
+                    continue;
                 }
 
                 let id = label.trim().to_string();
@@ -62,6 +63,24 @@ fn main() {
                 };
 
                 println!("And he/she/they go(es) to.. {}", site_key);
+            }
+            "rescale" => {
+                if label.is_empty() {
+                    println!("Please specify the value");
+                    continue;
+                }
+
+                let Ok(val) = label.trim().parse::<usize>() else {
+                    println!("Please specify a valid value");
+                    continue;
+                };
+
+                info.rescale(val);
+
+                analyser = Analyser::new();
+                analyser.run(&info);
+
+                println!("Rescaled the capacities to {val}%")
             }
             "refresh" => {
                 let mut with_quotas = true;
@@ -98,6 +117,7 @@ fn main() {
                 println!("info <ID>                       Find out where the applicant with the given ID gets to");
                 println!("points                          See the information about passing points");
                 println!("refresh [--ignore-quotas]       Refresh the data (optionally without considering quotas)");
+                println!("rescale <value>                 Rescale the capacities of the sites to <value>%");
             }
             _ => println!("Unknown command. Write `help` to see available commands.")
         }

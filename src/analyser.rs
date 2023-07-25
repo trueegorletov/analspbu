@@ -20,7 +20,7 @@ impl Analyser {
         self.admission.clear();
 
         println!("Handling abiturients...");
-        let mut bar = ProgressBar::new(info.abits().len() as u64);
+        let bar = ProgressBar::new(info.abits().len() as u64);
         for (abit_key, _) in info.abits() {
             self.admit(info, abit_key);
 

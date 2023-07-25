@@ -434,7 +434,7 @@ impl Loader {
 
     pub fn run(&mut self, with_quotas: bool) {
         println!("Loading the pages...");
-        let mut bar = ProgressBar::new(PAGES.len() as u64);
+        let bar = ProgressBar::new(PAGES.len() as u64);
         for i in 0..PAGES.len() {
             let page = PAGES[i];
             self.load_page((PAGE_START.to_owned() + page).as_str());
@@ -449,7 +449,7 @@ impl Loader {
         macro_rules! load_quotas {
             ($arr:ident; $kind:expr; $log_name:expr) => {
                 println!("Loading the {} pages...", $log_name);
-                let mut bar = ProgressBar::new($arr.len() as u64);
+                let bar = ProgressBar::new($arr.len() as u64);
                 for i in 0..$arr.len() {
                     let page = $arr[i];
                     self.load_quota_page((PAGE_START.to_owned() + page).as_str(), $kind);
