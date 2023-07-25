@@ -54,16 +54,16 @@ fn main() {
                 let id = label.trim().to_string();
 
                 if !info.is_abit_registered(&id) {
-                    print!("No abiturient found with the specified ID: \"{label}\"");
+                    println!("No abiturient found with the specified ID: \"{label}\"");
                     continue;
                 }
 
                 let Some(site_key) = analyser.admission().get(&id) else {
-                    print!("Abiturient was not admitted to any site :(");
+                    println!("Abiturient was not admitted to any site :(");
                     continue;
                 };
 
-                print!("And he/she/they goes to.. {}", site_key);
+                println!("And he/she/they go(es) to.. {}", site_key);
             }
             "refresh" => {
                 let mut loader = Loader::new();
@@ -74,16 +74,23 @@ fn main() {
                 analyser = Analyser::new();
                 analyser.run(&info);
 
-                print!("Successfully refreshed the data")
+                println!("Successfully refreshed the data")
             }
             "points" => {
-                for (site_key, _) in info.site_capacities() {
+                for (site_key, places) in info.site_capacities() {
                     let (pass_score, last_admitted_place) = analyser.get_site_passing_info(&info, site_key);
 
-                    println!("{site_key} -> {pass_score} | {last_admitted_place}")
+                    println!("{site_key} [{places} places] -> {pass_score}pts | #{last_admitted_place}")
                 }
             }
-            _ => println!("Unknown command")
+            "help" => {
+                println!("Available commands:");
+                println!("help                        See available commands");
+                println!("info <ID>                   Find out where the applicant with the given ID gets to");
+                println!("points                      See the information about passing points");
+                println!("refresh [--no-quotas]       Refresh the data (optionally without considering quotas)");
+            }
+            _ => println!("Unknown command. Write `help` to see available commands.")
         }
     }
 }
