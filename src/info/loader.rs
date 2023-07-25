@@ -1,10 +1,9 @@
-use std::cmp::{max, min};
-use std::fs;
-use std::os::unix::raw::off_t;
+use std::cmp::{min};
+
+
 use lazy_static::lazy_static;
 use regex::Regex;
 use tl::NodeHandle;
-use tl::queryselector::iterable::QueryIterable;
 use crate::info::Info;
 
 pub struct Loader {
@@ -501,10 +500,10 @@ impl Loader {
 
             let place = children[0].get(parser).unwrap().inner_text(parser);
             let id = children[1].get(parser).unwrap().inner_text(parser);
-            let comp_ty = children[2].get(parser).unwrap().inner_text(parser);
+            let _comp_ty = children[2].get(parser).unwrap().inner_text(parser);
             let priority = children[3].get(parser).unwrap().inner_text(parser);
             let sum_total = children[4].get(parser).unwrap().inner_text(parser);
-            let sum_scores = children[5].get(parser).unwrap().inner_text(parser);
+            let _sum_scores = children[5].get(parser).unwrap().inner_text(parser);
 
             let mut scores = vec![];
 
@@ -516,9 +515,9 @@ impl Loader {
                 i += 1;
             }
 
-            let sum_ind = children[i].get(parser).unwrap().inner_text(parser);
-            let ind_descr = children[i + 1].get(parser).unwrap().inner_text(parser);
-            let optional = children[i + 2].get(parser).unwrap().inner_text(parser);
+            let _sum_ind = children[i].get(parser).unwrap().inner_text(parser);
+            let _ind_descr = children[i + 1].get(parser).unwrap().inner_text(parser);
+            let _optional = children[i + 2].get(parser).unwrap().inner_text(parser);
 
             let id = id.trim().to_string();
             let priority: usize = priority.trim().parse().unwrap();
@@ -536,7 +535,7 @@ impl Loader {
         }
     }
 
-    pub fn load_quota_page(&mut self, addr: &str, kind: QuotaKind) {
+    fn load_quota_page(&mut self, addr: &str, kind: QuotaKind) {
         let content = reqwest::blocking::get(
             addr
         )

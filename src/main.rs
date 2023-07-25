@@ -1,6 +1,6 @@
 use std::io;
 use crate::analyser::Analyser;
-use crate::info::{Info, Loader};
+use crate::info::{Loader};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 

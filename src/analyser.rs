@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::info::{Abit, AbitKey, Info, SiteKey};
+use crate::info::{AbitKey, Info, SiteKey};
 
 pub struct Analyser {
     sites: HashMap<SiteKey, Site>,
@@ -95,7 +95,7 @@ impl Site {
 
     fn admit(&mut self, abit_key: &AbitKey, abit_place: usize) -> (bool, Option<AbitKey>) {
         for i in 0..self.abits.len() {
-            let (key, place) = &self.abits[i];
+            let (_key, place) = &self.abits[i];
 
             if abit_place < *place {
                 self.abits.insert(i, (abit_key.clone(), abit_place));
