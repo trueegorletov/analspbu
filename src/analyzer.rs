@@ -2,16 +2,18 @@ use std::collections::HashMap;
 use indicatif::ProgressBar;
 use crate::info::{AbitKey, Info, SiteKey};
 
-pub struct Analyser {
+pub struct Analyzer {
     sites: HashMap<SiteKey, Site>,
     admission: HashMap<AbitKey, SiteKey>,
+    muted: bool,
 }
 
-impl Analyser {
+impl Analyzer {
     pub fn new() -> Self {
         Self {
             sites: HashMap::new(),
             admission: HashMap::new(),
+            muted: false,
         }
     }
 
@@ -19,14 +21,20 @@ impl Analyser {
         self.sites.clear();
         self.admission.clear();
 
-        println!("Handling abiturients...");
-        let bar = ProgressBar::new(info.abits().len() as u64);
-        for (abit_key, _) in info.abits() {
-            self.admit(info, abit_key);
+        if self.muted {
+            for (abit_key, _) in info.abits() {
+                self.admit(info, abit_key);
+            }
+        } else {
+            println!("Handling abiturients...");
+            let bar = ProgressBar::new(info.abits().len() as u64);
+            for (abit_key, _) in info.abits() {
+                self.admit(info, abit_key);
 
-            bar.inc(1);
+                bar.inc(1);
+            }
+            bar.finish();
         }
-        bar.finish();
     }
 
     fn admit(&mut self, info: &Info, abit_key: &AbitKey) {
@@ -67,7 +75,7 @@ impl Analyser {
         &self.admission
     }
 
-    pub fn get_site_passing_info(&self, info: &Info, site_key: &SiteKey) -> (usize, usize) {
+    pub fn get_site_passing_info(&self, info: &Info, site_key: &SiteKey) -> (u32, u32) {
         let site = self.sites.get(site_key).unwrap();
 
         if site.abits.is_empty() {
@@ -78,29 +86,33 @@ impl Analyser {
 
         (info.get_abit(abit_key).get_score(site_key), *place)
     }
+
+    pub fn mute(&mut self) {
+        self.muted = true;
+    }
 }
 
 pub struct Site {
-    capacity: usize,
-    abits: Vec<(AbitKey, usize)>,
+    capacity: u32,
+    abits: Vec<(AbitKey, u32)>,
 }
 
 impl Site {
-    fn new(capacity: usize) -> Self {
+    fn new(capacity: u32) -> Self {
         Self {
             capacity,
             abits: vec![],
         }
     }
 
-    fn admit(&mut self, abit_key: &AbitKey, abit_place: usize) -> (bool, Option<AbitKey>) {
+    fn admit(&mut self, abit_key: &AbitKey, abit_place: u32) -> (bool, Option<AbitKey>) {
         for i in 0..self.abits.len() {
             let (_key, place) = &self.abits[i];
 
             if abit_place < *place {
                 self.abits.insert(i, (abit_key.clone(), abit_place));
 
-                return (true, if self.abits.len() > self.capacity {
+                return (true, if self.abits.len() > self.capacity as usize {
                     Some(self.abits.pop().unwrap().0)
                 } else {
                     None
@@ -108,7 +120,7 @@ impl Site {
             }
         }
 
-        if self.abits.len() < self.capacity {
+        if self.abits.len() < self.capacity as usize {
             self.abits.push((abit_key.clone(), abit_place));
             return (true, None);
         }

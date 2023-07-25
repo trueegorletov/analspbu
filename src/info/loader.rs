@@ -432,7 +432,7 @@ impl Loader {
         }
     }
 
-    pub fn run(&mut self, with_quotas: bool) {
+    pub fn run(&mut self) {
         println!("Loading the pages...");
         let bar = ProgressBar::new(PAGES.len() as u64);
         for i in 0..PAGES.len() {
@@ -445,7 +445,9 @@ impl Loader {
             bar.inc(1);
         }
         bar.finish();
+    }
 
+    pub fn fetch_quotas(&mut self) {
         macro_rules! load_quotas {
             ($arr:ident; $kind:expr; $log_name:expr) => {
                 println!("Loading the {} pages...", $log_name);
@@ -463,14 +465,12 @@ impl Loader {
             }
         }
 
-        if with_quotas {
-            load_quotas!(TARGET_QUOTA_PAGES; QuotaKind::Target; "target quota");
-            load_quotas!(SPECIAL_QUOTA_PAGES; QuotaKind::Special; "special quota");
-            load_quotas!(SEPARATE_QUOTA_PAGES; QuotaKind::Separate; "separate quota");
-        }
+        load_quotas!(TARGET_QUOTA_PAGES; QuotaKind::Target; "target quota");
+        load_quotas!(SPECIAL_QUOTA_PAGES; QuotaKind::Special; "special quota");
+        load_quotas!(SEPARATE_QUOTA_PAGES; QuotaKind::Separate; "separate quota");
     }
 
-    pub fn load_page(&mut self, addr: &str) {
+    fn load_page(&mut self, addr: &str) {
         let content = reqwest::blocking::get(
             addr
         )
@@ -491,7 +491,7 @@ impl Loader {
 
         let site_id = SITE_ID_RE.captures(about.as_ref()).unwrap()[1].trim().to_string();
 
-        let site_capacity: usize = SITE_CAPACITY_RE.captures(about.as_ref()).unwrap()[1].trim().parse().unwrap();
+        let site_capacity: u32 = SITE_CAPACITY_RE.captures(about.as_ref()).unwrap()[1].trim().parse().unwrap();
 
         self.info.set_site_capacity(&site_id, site_capacity);
 
@@ -529,9 +529,9 @@ impl Loader {
             let _optional = children[i + 2].get(parser).unwrap().inner_text(parser);
 
             let id = id.trim().to_string();
-            let priority: usize = priority.trim().parse().unwrap();
-            let place: usize = place.trim().parse().unwrap();
-            let sum_total: usize = if sum_total.trim().is_empty() {
+            let priority: u32 = priority.trim().parse().unwrap();
+            let place: u32 = place.trim().parse().unwrap();
+            let sum_total: u32 = if sum_total.trim().is_empty() {
                 999
             } else {
                 sum_total.trim().split(",").next().unwrap().parse().unwrap()
@@ -569,8 +569,8 @@ impl Loader {
             return;
         }
 
-        let quota_asked: usize = QUOTA_USED_RE.captures(about.as_ref()).unwrap()[1].trim().parse().unwrap();
-        let quota_max: usize = kind.regex().captures(about.as_ref()).unwrap()[1].trim().parse().unwrap();
+        let quota_asked: u32 = QUOTA_USED_RE.captures(about.as_ref()).unwrap()[1].trim().parse().unwrap();
+        let quota_max: u32 = kind.regex().captures(about.as_ref()).unwrap()[1].trim().parse().unwrap();
 
         let remove = min(quota_asked, quota_max);
 
