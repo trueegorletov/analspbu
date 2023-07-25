@@ -31,7 +31,9 @@ fn main() {
 
     loop {
         let mut input = "".to_string();
-        stdin.read_line(&mut input).unwrap();
+        let Ok(_) = stdin.read_line(&mut input) else {
+            continue;
+        };
 
         let mut input = input.split_whitespace();
 
