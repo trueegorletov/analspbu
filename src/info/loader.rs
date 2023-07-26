@@ -565,7 +565,7 @@ impl Loader {
 
         let site_id = SITE_ID_RE.captures(about.as_ref()).unwrap()[1].trim().to_string();
 
-        if !self.info.site_capacities.contains_key(&site_id) {
+        if !self.info.sites.contains_key(&site_id) {
             return;
         }
 

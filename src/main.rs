@@ -115,11 +115,26 @@ fn main() {
                 println!("Successfully refreshed the data")
             }
             "points" => {
-                for (site_key, places) in info.site_capacities() {
+                let mut out = vec![];
+
+                for (site_key, site) in info.site_capacities() {
+                    let places = site.places();
+
+                    if needle.contains(site_key) {
+                        continue;
+                    }
+
                     let (pass_score, last_admitted_place) = analyser.get_site_passing_info(&info, site_key);
 
-                    println!("{site_key} [{places} places] -> {pass_score} | #{last_admitted_place}")
+                    out.push((site_key, pass_score, last_admitted_place, places));
                 }
+
+                out.sort_by_key(|(_, k, _, _)| (*k as i64) * -1);
+
+                for (site, result, last_admitted_place, places) in out {
+                    println!("{site} [{places}] -> {result} | #{last_admitted_place}");
+                }
+
             }
             "drop_analyze" => {
                 macro_rules! wa {
